@@ -1,4 +1,4 @@
-package com.example.japp;
+package com.example.japp.model;
 
 public class Item {
 	private String name;
