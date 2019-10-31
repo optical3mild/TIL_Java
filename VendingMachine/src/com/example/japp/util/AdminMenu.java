@@ -1,5 +1,7 @@
 package com.example.japp.util;
 
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Scanner;
 
 import com.example.japp.model.Member;
@@ -15,10 +17,15 @@ public class AdminMenu {
 			System.out.println("맞는 열쇠가 없습니다.");
 		} else {
 			boolean run = true;
+			AppMenuMaker amm = new AppMenuMaker();
 			
 			int selectedMenu = 0;
 			
 			Member vmAdmin = member;
+			
+			
+			String[] adminMenu = {"기계관리","전원조작","잔고관리","판매메뉴","제품적재","기계현황","기계관리 종료"};
+			String[] subMenu1 = {"전원조작","켜기","끄기","돌아가기"};
 			
 			while(run) {
 				//현재 기계전원
@@ -34,16 +41,20 @@ public class AdminMenu {
 				System.out.println("잔고: " + vmSafeBox);
 				
 				//관리자 메인메뉴
+				amm.menuPrinter(adminMenu);
+				
+				
+				/*
 				System.out.println("[기계관리]---------");
 				System.out.println("1.전원조작");
 				System.out.println("2.잔고관리");
-				System.out.println("3.가격조정");
+				System.out.println("3.판매메뉴");
 				System.out.println("4.제품적재");
 				System.out.println("5.기계현황");
 				System.out.println("6.기계관리 종료");
 				System.out.println("-------------------");
 				System.out.print("메뉴선택: ");
-				
+				*/
 				selectedMenu = Integer.parseInt(scan.nextLine());
 				
 				int selectedSetting = 0;	//서브메뉴 선택
@@ -53,13 +64,16 @@ public class AdminMenu {
 					// 전원조작
 					case 1:
 						while(subMenu) {
-							System.out.println("[1.전원조작]--");
+							/*
 							System.out.println("전원 : " + vm.isPower_on());
+							System.out.println("[1.전원조작]--");
 							System.out.println("1.켜기");
 							System.out.println("2.끄기");
 							System.out.println("3.돌아가기");
 							System.out.println("------------");
 							System.out.print("메뉴선택: ");
+							*/
+							amm.menuPrinter(subMenu1);
 							
 							selectedSetting = Integer.parseInt(scan.nextLine());
 							
@@ -115,10 +129,12 @@ public class AdminMenu {
 						}
 						break;
 					
-					//가격정보 조작
+					//판매메뉴설정
 					case 3:
 						while(subMenu) {
-							
+							MenuWriter mw = new MenuWriter();
+							mw.mWriter(vm);
+							subMenu = false;
 						}
 						break;
 					
@@ -140,6 +156,11 @@ public class AdminMenu {
 					case 6:
 						System.out.println("문을 닫고 메인메뉴로 이동합니다.");
 						run = false;
+						break;
+					
+					//메뉴 이외의 값이 입력된 경우
+					default :
+						System.out.println("1 ~ 6 사이의 숫자를 입력하세요.");
 						break;
 				}
 			}
