@@ -17,6 +17,14 @@ public class VendingMachine {
 	private List[] stocker = new List[10];	// 제품 저장공간. 인덱스별로 ArrayList에 동일 아이템을 담아 저장한다.
 	private Object[] outlet = new Object[20]; // 물건 배출구
 	
+	//전원표시
+	public String displayPw() {
+		String pw; 
+		if(isPower_on()) pw = "켜짐";
+		else pw = "꺼짐";
+		
+		return pw;
+	}
 	
 	
 	public VendingMachine() {

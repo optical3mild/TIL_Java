@@ -1,7 +1,5 @@
 package com.example.japp.util;
 
-import java.util.HashMap;
-import java.util.Map;
 import java.util.Scanner;
 
 import com.example.japp.model.Member;
@@ -23,85 +21,55 @@ public class AdminMenu {
 			
 			Member vmAdmin = member;
 			
-			
 			String[] adminMenu = {"기계관리","전원조작","잔고관리","판매메뉴","제품적재","기계현황","기계관리 종료"};
 			String[] subMenu1 = {"전원조작","켜기","끄기","돌아가기"};
+			String[] subMenu2 = {"잔고관리", "잔고출금", "잔고입금", "돌아가기"};
+			String[] subMenu3 = {"판매메뉴", "판매목록 설정", "판매가격 설정", "돌아가기"};
 			
 			while(run) {
-				//현재 기계전원
-				String pw; 
-				if(vm.isPower_on()) pw = "POWER ON";
-				else pw = "POWER OFF";
-				
-				//현재 기계잔고
-				int vmSafeBox = vm.getSafeBox();
 				
 				//기계상태 출력
-				System.out.println("전원: " + pw);
-				System.out.println("잔고: " + vmSafeBox);
+				System.out.println("전원: " + vm.displayPw());
+				System.out.println("잔고: " + vm.getSafeBox());
 				
 				//관리자 메인메뉴
 				amm.menuPrinter(adminMenu);
 				
-				
-				/*
-				System.out.println("[기계관리]---------");
-				System.out.println("1.전원조작");
-				System.out.println("2.잔고관리");
-				System.out.println("3.판매메뉴");
-				System.out.println("4.제품적재");
-				System.out.println("5.기계현황");
-				System.out.println("6.기계관리 종료");
-				System.out.println("-------------------");
-				System.out.print("메뉴선택: ");
-				*/
 				selectedMenu = Integer.parseInt(scan.nextLine());
 				
+				System.out.println("");	//줄바꿈
+				
 				int selectedSetting = 0;	//서브메뉴 선택
-				boolean subMenu = true;		//서브메뉴 종료
+				boolean subMenuRun = true;		//서브메뉴 종료
 				
 				switch(selectedMenu) {
 					// 전원조작
 					case 1:
-						while(subMenu) {
-							/*
-							System.out.println("전원 : " + vm.isPower_on());
-							System.out.println("[1.전원조작]--");
-							System.out.println("1.켜기");
-							System.out.println("2.끄기");
-							System.out.println("3.돌아가기");
-							System.out.println("------------");
-							System.out.print("메뉴선택: ");
-							*/
+						while(subMenuRun) {
+							System.out.println("전원: " + vm.displayPw());
 							amm.menuPrinter(subMenu1);
-							
 							selectedSetting = Integer.parseInt(scan.nextLine());
 							
 							if(selectedSetting == 1) {
 								vm.setPower_on(true);
-								System.out.println("전원 : 켜짐");
 							} else if(selectedSetting == 2){
 								vm.setPower_on(false);
-								System.out.println("전원 : 꺼짐");
 							} else if(selectedSetting == 3){
 								System.out.println("관리자메뉴로 돌아갑니다.");
-								subMenu = false;
+								subMenuRun = false;
 							} else {
 								System.out.println("메뉴에서 선택하세요.");
 							}
+							System.out.println("");
 						}
 						break;
 					
-					//잔고조작
+					// 잔고조작
 					case 2:
-						while(subMenu) {
-							System.out.println("[2.잔고관리]-----");
-							System.out.println("현재잔고: " + vm.getSafeBox());
-							System.out.println("1.잔고출금");
-							System.out.println("2.잔고입금");
-							System.out.println("3.돌아가기");
-							System.out.println("-----------------");
-							System.out.print("메뉴선택: ");
+						while(subMenuRun) {
+							System.out.println("기계잔액 : " + vm.getSafeBox());
+							System.out.println("소지금액 : " + vmAdmin.getWallet());
+							amm.menuPrinter(subMenu2);
 							
 							selectedSetting = Integer.parseInt(scan.nextLine());
 							
@@ -111,44 +79,91 @@ public class AdminMenu {
 								
 								if(vm.getSafeBox() >= withdrawal) {
 									vm.setSafeBox(vm.getSafeBox() - withdrawal);
-									System.out.println("잔액 : " + vm.getSafeBox());
+									vmAdmin.setWallet(vmAdmin.getWallet() + withdrawal);
 								} else {
-									System.out.println("잔고가 부족합니다");
+									System.out.println("기계잔액이 부족합니다");
 								}
 							} else if(selectedSetting == 2) {
 								System.out.print("입금금액: ");
-								int withdrawal = Integer.parseInt(scan.nextLine());
-								vm.setSafeBox(vm.getSafeBox() + withdrawal);
-								System.out.println("잔액 : " + vm.getSafeBox());
+								int deposit = Integer.parseInt(scan.nextLine());
+								if(vmAdmin.getWallet() >= deposit) {
+									vm.setSafeBox(vm.getSafeBox() + deposit);
+									vmAdmin.setWallet(vmAdmin.getWallet() - deposit);
+								} else {
+									System.out.println("소지금액이 부족합니다");
+								}
 							} else if(selectedSetting == 3) {
 								System.out.println("관리자메뉴로 돌아갑니다.");
-								subMenu = false;
+								subMenuRun = false;
 							} else {
 								System.out.println("메뉴에서 선택하세요.");
 							}
+							System.out.println("");
 						}
 						break;
 					
 					//판매메뉴설정
 					case 3:
-						while(subMenu) {
-							MenuWriter mw = new MenuWriter();
-							mw.mWriter(vm);
-							subMenu = false;
+						while(subMenuRun) {
+							//현재메뉴 출력
+							String[] iList = vm.getItemList();
+							int[] pList = vm.getPriceList();
+							amm.statusPrinter("판매메뉴", iList, pList);;
+							//subMenu3 출력
+							amm.menuPrinter(subMenu3);
+							
+							selectedSetting = Integer.parseInt(scan.nextLine());
+							InputStringChecker isc = new InputStringChecker();
+							
+							if(selectedSetting == 1) {
+								//판매목록 설정
+								for(int i=0; i<iList.length; i++) {
+									System.out.print((i+1)+"번: ");
+									String temp = scan.nextLine();
+									if(isc.isEmpty(temp)) iList[i] = "Empty";
+									else iList[i] = temp;
+								}
+							} else if(selectedSetting == 2) {
+								//판매가격 설정
+								for(int i=0; i<pList.length; i++) {
+									boolean putPrice = true;
+									String temp = "";
+									while(putPrice) {
+										System.out.print((i+1)+". "+iList[i]+": ");
+										temp = scan.nextLine();
+										if(isc.isEmpty(temp)) { //전체공백인지 확인
+											temp = "0";
+											putPrice = false;
+										} else { //정수로 입력되었는지 확인
+											putPrice = isc.isNotInteger(temp);
+											if(putPrice == true) System.out.println("정수를 입력하세요.");
+										}
+									}
+									pList[i] = Integer.parseInt(temp);
+								}
+							} else if(selectedSetting == 3) {
+								System.out.println("관리자메뉴로 돌아갑니다.");
+								subMenuRun = false;
+							} else {
+								System.out.println("메뉴에서 선택하세요.");
+							}
+							System.out.println("");
 						}
 						break;
 					
 					//제품 저장공간 조작
 					case 4:
-						while(subMenu) {
+						while(subMenuRun) {
 							
+							System.out.println("");
 						}
 						break;
 					
 					//기계현황 출력
 					case 5:
-						while(subMenu) {
+						while(subMenuRun) {
 							
+							System.out.println("");
 						}
 						break;
 					
@@ -156,14 +171,17 @@ public class AdminMenu {
 					case 6:
 						System.out.println("문을 닫고 메인메뉴로 이동합니다.");
 						run = false;
+						System.out.println("");
 						break;
 					
 					//메뉴 이외의 값이 입력된 경우
 					default :
 						System.out.println("1 ~ 6 사이의 숫자를 입력하세요.");
+						System.out.println("");
 						break;
 				}
 			}
 		}
 	}
+	
 }
